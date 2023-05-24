@@ -5,6 +5,7 @@ import { store } from "./store";
 import { Provider } from "react-redux";
 import Home from "./components/Home";
 import Login from "./components/Login";
+import SiteDetail from "./components/SiteDetail";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +15,10 @@ const router = createBrowserRouter([
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/site/:siteId",
+    element: <SiteDetail />,
   },
 ]);
 
