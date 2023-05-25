@@ -100,7 +100,9 @@ const SiteDetail = () => {
                           <div
                             style={{
                               display: "inline-block",
-                              border: "1px solid blue",
+                              border: `1px solid ${
+                                z.id === currentZone ? "red" : "blue"
+                              }`,
                               marginLeft: 6,
                               padding: 4,
                               cursor: "pointer",
