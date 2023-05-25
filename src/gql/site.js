@@ -15,6 +15,7 @@ export const GET_SITE = gql`
       id
       name
       cameras {
+        camera_name
         id
         name
         zones {

@@ -93,7 +93,7 @@ const SiteDetail = () => {
               {site.cameras?.length
                 ? site.cameras.map((c) => (
                     <div key={c.id} style={{ border: "2px solid #f1f1f1" }}>
-                      <div>{c.name}</div>
+                      <div>{c.camera_name}</div>
                       <div>
                         ZONE:{" "}
                         {c.zones?.map((z) => (
