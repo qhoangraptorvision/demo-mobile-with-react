@@ -40,3 +40,22 @@
 .read-the-docs {
   color: #888;
 }
+
+table {
+  border-spacing: 0;
+}
+
+th {
+  padding: 10px;
+}
+
+td {
+  border-top: 1px solid #333333;
+  border-left: none;
+  border-right: none;
+  padding: 10px;
+}
+
+tr:hover {
+  background-color: #f3f3f3;
+}

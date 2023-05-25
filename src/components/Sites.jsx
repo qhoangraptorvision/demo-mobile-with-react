@@ -14,21 +14,30 @@ const Sites = () => {
       {loading && <h3>Loading Sites ...</h3>}
       {error && <h3>{JSON.stringify(error)}</h3>}
       {/* {sites && <h3>{JSON.stringify(sites)}</h3>} */}
-      {sites?.length &&
-        sites.map((site, index) => (
-          <div
-            key={index}
-            style={{
-              padding: 4,
-              border: "1px solid #333333",
-              margin: 4,
-              cursor: "pointer",
-            }}
-            onClick={() => navigate(`/site/${site.id}`)}
-          >
-            {index + 1}. ID: {site.id} - Name: {site.name}
-          </div>
-        ))}
+      <div style={{ display: "flex", justifyContent: "center" }}>
+        {sites?.length && (
+          <table>
+            <tr>
+              <th>No.</th>
+              <th>ID</th>
+              <th>Name</th>
+            </tr>
+            {sites.map((site, index) => (
+              <tr
+                key={index}
+                style={{
+                  cursor: "pointer",
+                }}
+                onClick={() => navigate(`/site/${site.id}`)}
+              >
+                <td>{index + 1}</td>
+                <td>{site.id}</td>
+                <td>{site.name}</td>
+              </tr>
+            ))}
+          </table>
+        )}
+      </div>
     </>
   );
 };
