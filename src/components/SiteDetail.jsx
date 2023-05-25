@@ -31,16 +31,53 @@ const SiteDetail = () => {
       {/* <p>Is Auth {JSON.stringify(isAuth)}</p> */}
       {/* <p>TOKEN: {token}</p> */}
       {/* <p>siteData {JSON.stringify(siteData)}</p> */}
+
       {site && (
-        <div>
-          <p>Site ID: {site.id}</p>
-          <p>Site Name: {site.name}</p>
-          <p>
-            CAMERA:{" "}
-            {site.cameras?.length
-              ? site.cameras.map((c) => <div key={c.id}>{c.name}</div>)
-              : "---"}
-          </p>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "row",
+            justifyContent: "space-between",
+          }}
+        >
+          <div>
+            <p>Site ID: {site.id}</p>
+            <p>Site Name: {site.name}</p>
+            <div>
+              <b>CAMERA:</b>
+              {site.cameras?.length
+                ? site.cameras.map((c) => (
+                    <div key={c.id} style={{ border: "2px solid #f1f1f1" }}>
+                      <div>{c.name}</div>
+                      <div>
+                        ZONE:{" "}
+                        {c.zones?.map((z) => (
+                          <div
+                            style={{
+                              display: "inline-block",
+                              border: "1px solid blue",
+                              marginLeft: 6,
+                              padding: 4,
+                              cursor: "pointer",
+                            }}
+                            key={z.id}
+                          >
+                            {z.name}
+                          </div>
+                        ))}
+                        {!c.zones?.length && "No zone."}
+                      </div>
+                    </div>
+                  ))
+                : "---"}
+            </div>
+          </div>
+          <div style={{ marginLeft: 100 }}>
+            <h3>
+              SOCKET: Connect to{" "}
+              {import.meta.env.VITE_PORTAL_SOCKET || "http://localhost:6789"}
+            </h3>
+          </div>
         </div>
       )}
     </>
