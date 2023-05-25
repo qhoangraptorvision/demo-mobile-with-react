@@ -89,13 +89,28 @@ const SiteDetail = () => {
             <p>Site ID: {site.id}</p>
             <p>Site Name: {site.name}</p>
             <div>
-              <b>CAMERA:</b>
-              {site.cameras?.length
-                ? site.cameras.map((c) => (
-                    <div key={c.id} style={{ border: "2px solid #f1f1f1" }}>
-                      <div>{c.camera_name}</div>
-                      <div>
-                        ZONE:{" "}
+              <div>
+                <b>CAMERA LIST</b>
+              </div>
+              {site.cameras?.length ? (
+                <table>
+                  <tr>
+                    <th>No.</th>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Zone</th>
+                  </tr>
+                  {site.cameras.map((c, index) => (
+                    <tr
+                      key={c.id}
+                      style={{
+                        cursor: "pointer",
+                      }}
+                    >
+                      <td>{index + 1}</td>
+                      <td>{c.id}</td>
+                      <td>{c.name}</td>
+                      <td>
                         {c.zones?.map((z) => (
                           <div
                             style={{
@@ -114,10 +129,13 @@ const SiteDetail = () => {
                           </div>
                         ))}
                         {!c.zones?.length && "No zone."}
-                      </div>
-                    </div>
-                  ))
-                : "---"}
+                      </td>
+                    </tr>
+                  ))}
+                </table>
+              ) : (
+                "No camera"
+              )}
             </div>
           </div>
           <div style={{ marginLeft: 100, maxWidth: 400 }}>
