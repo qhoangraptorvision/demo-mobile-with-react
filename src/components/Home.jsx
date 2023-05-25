@@ -16,7 +16,7 @@ const Home = () => {
 
   return (
     <>
-      <h1>Home PAGE</h1>
+      <h2>Home PAGE</h2>
       <p>TOKEN: {token}</p>
       <Sites />
     </>

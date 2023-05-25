@@ -88,7 +88,7 @@ const SiteDetail = () => {
 
   return (
     <>
-      <h1>Site Detail PAGE</h1>
+      <h2>Site Detail PAGE</h2>
       {site && (
         <div
           style={{
@@ -154,7 +154,7 @@ const SiteDetail = () => {
               )}
             </div>
           </div>
-          <div style={{ marginLeft: 100, maxWidth: 400 }}>
+          <div style={{ marginLeft: 100 }}>
             <h3>
               {`SOCKET - Connect to ${
                 import.meta.env.VITE_PORTAL_SOCKET || "http://localhost:6789"
@@ -162,11 +162,36 @@ const SiteDetail = () => {
             </h3>
 
             <h4>Shunt/Runaway Events</h4>
-            <div>{JSON.stringify(socketShunt)}</div>
+            {/* <div>{JSON.stringify(socketShunt)}</div> */}
+            <div>
+              {socketShunt.map((e, index) => (
+                <div
+                  key={index}
+                  style={{
+                    background: "",
+                    left: 0,
+                    borderBottom: "1px solid #c2c2c2",
+                  }}
+                >
+                  <p>{JSON.stringify(e)}</p>
+                  {/* <p>========================</p> */}
+                </div>
+              ))}
+            </div>
             <h4>Zone Events</h4>
             <div>
               {socketZone.map((e, index) => (
-                <div key={index}>{JSON.stringify(e)}</div>
+                <div
+                  key={index}
+                  style={{
+                    background: "",
+                    left: 0,
+                    borderBottom: "1px solid #c2c2c2",
+                  }}
+                >
+                  <p>{JSON.stringify(e)}</p>
+                  {/* <p>========================</p> */}
+                </div>
               ))}
             </div>
             {/* <div>{JSON.stringify(socketZone)}</div> */}
