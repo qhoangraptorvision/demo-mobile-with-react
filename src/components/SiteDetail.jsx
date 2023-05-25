@@ -1,10 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
 import { decrement, increment } from "../slices/auth";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Sites from "./Sites";
 import { useQuery } from "@apollo/client";
 import { GET_SITE } from "../gql/site";
+import { socket } from "../socket";
 
 const SiteDetail = () => {
   const navigate = useNavigate();
@@ -18,12 +19,56 @@ const SiteDetail = () => {
     error,
   } = useQuery(GET_SITE, { variables: { siteId } });
   const site = siteData?.site;
+  const [socketConnected, setSocketConnected] = useState(false);
+  const [socketShunt, setSocketShunt] = useState([]);
+  const [socketZone, setSocketZone] = useState([]);
+  const [currentZone, setCurrentZone] = useState(null);
 
   useEffect(() => {
     if (!isAuth) {
       navigate("/login");
     }
   }, []);
+
+  useEffect(() => {
+    console.log("Subs socket events");
+    socket.on("connect", () => {
+      console.log("socket connected");
+      setSocketConnected(true);
+    });
+
+    socket.on(siteId, (data) => {
+      setSocketShunt([data, ...socketShunt]);
+      console.log("🚀 ~ SITE data:", data);
+    });
+
+    socket.on("disconnect", () => {
+      console.log("socket disconnected!");
+      setSocketConnected(false);
+    });
+
+    return () => {
+      console.log("Unsubs socket events");
+      // socket.off("connect");
+      // socket.off("disconnect");
+      // socket.off(siteId);
+      if (currentZone) {
+        socket.off(currentZone);
+      }
+    };
+  }, []);
+
+  const handleListenZoneEvent = (nextZoneId) => {
+    console.log("🚀 ~ Listen event with Zone:", nextZoneId);
+    if (currentZone) {
+      socket.off(currentZone);
+    }
+    setCurrentZone(nextZoneId);
+    socket.on(nextZoneId, (data) => {
+      console.log("🚀 ~ ZONE data:", data);
+      setSocketZone([data, ...socketZone]);
+    });
+  };
 
   return (
     <>
@@ -61,6 +106,7 @@ const SiteDetail = () => {
                               cursor: "pointer",
                             }}
                             key={z.id}
+                            onClick={() => handleListenZoneEvent(z.id)}
                           >
                             {z.name}
                           </div>
@@ -72,11 +118,16 @@ const SiteDetail = () => {
                 : "---"}
             </div>
           </div>
-          <div style={{ marginLeft: 100 }}>
+          <div style={{ marginLeft: 100, maxWidth: 400 }}>
             <h3>
-              SOCKET: Connect to{" "}
-              {import.meta.env.VITE_PORTAL_SOCKET || "http://localhost:6789"}
+              {`SOCKET - Connect to ${
+                import.meta.env.VITE_PORTAL_SOCKET || "http://localhost:6789"
+              }: ${JSON.stringify(socketConnected)}`}
             </h3>
+            <h4>Shunt/Runaway Events</h4>
+            <div>{JSON.stringify(socketShunt)}</div>
+            <h4>Zone Events</h4>
+            <div>{JSON.stringify(socketZone)}</div>
           </div>
         </div>
       )}
