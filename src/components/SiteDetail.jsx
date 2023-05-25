@@ -73,10 +73,6 @@ const SiteDetail = () => {
   return (
     <>
       <h1>Site Detail PAGE</h1>
-      {/* <p>Is Auth {JSON.stringify(isAuth)}</p> */}
-      {/* <p>TOKEN: {token}</p> */}
-      {/* <p>siteData {JSON.stringify(siteData)}</p> */}
-
       {site && (
         <div
           style={{
@@ -94,44 +90,48 @@ const SiteDetail = () => {
               </div>
               {site.cameras?.length ? (
                 <table>
-                  <tr>
-                    <th>No.</th>
-                    <th>ID</th>
-                    <th>Name</th>
-                    <th>Zone</th>
-                  </tr>
-                  {site.cameras.map((c, index) => (
-                    <tr
-                      key={c.id}
-                      style={{
-                        cursor: "pointer",
-                      }}
-                    >
-                      <td>{index + 1}</td>
-                      <td>{c.id}</td>
-                      <td>{c.name}</td>
-                      <td>
-                        {c.zones?.map((z) => (
-                          <div
-                            style={{
-                              display: "inline-block",
-                              border: `1px solid ${
-                                z.id === currentZone ? "red" : "blue"
-                              }`,
-                              marginLeft: 6,
-                              padding: 4,
-                              cursor: "pointer",
-                            }}
-                            key={z.id}
-                            onClick={() => handleListenZoneEvent(z.id)}
-                          >
-                            {z.name}
-                          </div>
-                        ))}
-                        {!c.zones?.length && "No zone."}
-                      </td>
+                  <thead>
+                    <tr>
+                      <th>No.</th>
+                      <th>ID</th>
+                      <th>Name</th>
+                      <th>Zone</th>
                     </tr>
-                  ))}
+                  </thead>
+                  <tbody>
+                    {site.cameras.map((c, index) => (
+                      <tr
+                        key={c.id}
+                        style={{
+                          cursor: "pointer",
+                        }}
+                      >
+                        <td>{index + 1}</td>
+                        <td>{c.id}</td>
+                        <td>{c.camera_name}</td>
+                        <td>
+                          {c.zones?.map((z) => (
+                            <div
+                              style={{
+                                display: "inline-block",
+                                border: `1px solid ${
+                                  z.id === currentZone ? "red" : "blue"
+                                }`,
+                                marginLeft: 6,
+                                padding: 4,
+                                cursor: "pointer",
+                              }}
+                              key={z.id}
+                              onClick={() => handleListenZoneEvent(z.id)}
+                            >
+                              {z.name}
+                            </div>
+                          ))}
+                          {!c.zones?.length && "No zone."}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
                 </table>
               ) : (
                 "No camera"

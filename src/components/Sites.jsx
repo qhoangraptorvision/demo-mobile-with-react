@@ -17,24 +17,28 @@ const Sites = () => {
       <div style={{ display: "flex", justifyContent: "center" }}>
         {sites?.length && (
           <table>
-            <tr>
-              <th>No.</th>
-              <th>ID</th>
-              <th>Name</th>
-            </tr>
-            {sites.map((site, index) => (
-              <tr
-                key={index}
-                style={{
-                  cursor: "pointer",
-                }}
-                onClick={() => navigate(`/site/${site.id}`)}
-              >
-                <td>{index + 1}</td>
-                <td>{site.id}</td>
-                <td>{site.name}</td>
+            <thead>
+              <tr>
+                <th>No.</th>
+                <th>ID</th>
+                <th>Name</th>
               </tr>
-            ))}
+            </thead>
+            <tbody>
+              {sites.map((site, index) => (
+                <tr
+                  key={index}
+                  style={{
+                    cursor: "pointer",
+                  }}
+                  onClick={() => navigate(`/site/${site.id}`)}
+                >
+                  <td>{index + 1}</td>
+                  <td>{site.id}</td>
+                  <td>{site.name}</td>
+                </tr>
+              ))}
+            </tbody>
           </table>
         )}
       </div>
