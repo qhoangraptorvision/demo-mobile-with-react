@@ -6,6 +6,7 @@ import Sites from "./Sites";
 import { useQuery } from "@apollo/client";
 import { GET_SITE } from "../gql/site";
 import { socket } from "../socket";
+import StreamVideo from "./StreamVideo";
 
 const SiteDetail = () => {
   const navigate = useNavigate();
@@ -24,6 +25,8 @@ const SiteDetail = () => {
   const [socketZone, setSocketZone] = useState([]);
   const [currentZone, setCurrentZone] = useState(null);
   const [newEvent, setNewEvent] = useState();
+  const [streamMapper, setStreamMapper] = useState({});
+  const [currentStreamUrl, setCurrentStreamUrl] = useState();
 
   useEffect(() => {
     if (!isAuth) {
@@ -35,6 +38,9 @@ const SiteDetail = () => {
     console.log("Subs socket events");
     socket.on("connect", () => {
       console.log("socket connected");
+      socket.emit("CURRENT_SITE_DATA", {
+        siteId,
+      });
       setSocketConnected(true);
     });
 
@@ -69,7 +75,10 @@ const SiteDetail = () => {
   useEffect(() => {
     if (!newEvent) return;
 
-    if (newEvent.type === "SHUNT" || newEvent.type === "RUNAWAY") {
+    if (newEvent.type === "STREAM_CAMERAS") {
+      console.log("🚀 ~ newEvent.data:", newEvent.data);
+      setStreamMapper(newEvent.data);
+    } else if (newEvent.type === "SHUNT" || newEvent.type === "RUNAWAY") {
       setSocketShunt([newEvent, ...socketShunt]);
     } else {
       setSocketZone([newEvent, ...socketZone]);
@@ -84,6 +93,11 @@ const SiteDetail = () => {
   const handleClickZone = (nextZoneId) => {
     console.log("🚀 ~ Listen event with Zone:", nextZoneId);
     setCurrentZone(nextZoneId);
+  };
+
+  const handleClickCamera = (cameraId) => {
+    const streamUrl = streamMapper[cameraId]?.streamUrl;
+    setCurrentStreamUrl(streamUrl);
   };
 
   return (
@@ -121,6 +135,7 @@ const SiteDetail = () => {
                         style={{
                           cursor: "pointer",
                         }}
+                        onClick={() => handleClickCamera(c.id)}
                       >
                         <td>{index + 1}</td>
                         <td>{c.id}</td>
@@ -152,6 +167,7 @@ const SiteDetail = () => {
               ) : (
                 "No camera"
               )}
+              <StreamVideo streamUrl={currentStreamUrl} />
             </div>
           </div>
           <div style={{ marginLeft: 100 }}>
@@ -198,6 +214,7 @@ const SiteDetail = () => {
           </div>
         </div>
       )}
+      {/* {site && <StreamVideo streamUrl={currentStreamUrl} />} */}
     </>
   );
 };
