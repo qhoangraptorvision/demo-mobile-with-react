@@ -26,6 +26,8 @@ const SiteDetail = () => {
   const [currentZone, setCurrentZone] = useState(null);
   const [newEvent, setNewEvent] = useState();
   const [streamMapper, setStreamMapper] = useState({});
+  const [statusMapper, setStatusMapper] = useState({});
+  const [thumbnailMapper, setThumbnailMapper] = useState({});
   const [currentStreamUrl, setCurrentStreamUrl] = useState();
 
   useEffect(() => {
@@ -78,15 +80,28 @@ const SiteDetail = () => {
   useEffect(() => {
     if (!newEvent) return;
 
-    if (newEvent.type === "STREAM_CAMERAS") {
-      console.log("🚀 ~ newEvent.data:", newEvent.data);
-      setStreamMapper(newEvent.data);
-    } else if (newEvent.type === "SHUNT" || newEvent.type === "RUNAWAY") {
-      setSocketShunt([newEvent, ...socketShunt]);
-    } else {
-      setSocketZone([newEvent, ...socketZone]);
+    switch (newEvent.type) {
+      case "STREAM_CAMERAS":
+        setStreamMapper(newEvent.data);
+        break;
+      case "STATUS_CAMERAS":
+        setStatusMapper(newEvent.data);
+        break;
+      case "THUMBNAIL_CAMERAS":
+        setThumbnailMapper(newEvent.data);
+        break;
+
+      case "SHUNT":
+      case "RUNAWAY":
+        setSocketShunt([newEvent, ...socketShunt]);
+        break;
+      default:
+        setSocketZone([newEvent, ...socketZone]);
+        break;
     }
   }, [newEvent]);
+
+  useEffect(() => {}, [statusMapper]);
 
   const handleListenZoneEvent = (data) => {
     console.log("🚀 ~ ZONE data:", data);
@@ -126,8 +141,8 @@ const SiteDetail = () => {
                   <thead>
                     <tr>
                       <th>No.</th>
-                      <th>ID</th>
-                      <th>Name</th>
+                      <th>Thumbnail</th>
+                      <th>Camera</th>
                       <th>Zone</th>
                     </tr>
                   </thead>
@@ -141,8 +156,41 @@ const SiteDetail = () => {
                         onClick={() => handleClickCamera(c.id)}
                       >
                         <td>{index + 1}</td>
-                        <td>{c.id}</td>
-                        <td>{c.camera_name}</td>
+                        <td>
+                          <div
+                            style={{
+                              position: "relative",
+                            }}
+                          >
+                            <img
+                              src={`data:image/png;base64, ${
+                                thumbnailMapper[c.id]?.thumbnail_base64
+                              }`}
+                              alt="No thumbnail."
+                              style={{
+                                height: "80px",
+                                objectFit: "contain",
+                              }}
+                            />
+                            <div
+                              style={{
+                                position: "absolute",
+                                top: "3px",
+                                left: "3px",
+                                width: "20px",
+                                height: "20px",
+                                borderRadius: "50%",
+                                backgroundColor: statusMapper[c.id]?.online
+                                  ? "green"
+                                  : "red",
+                              }}
+                            ></div>
+                          </div>
+                        </td>
+                        <td>
+                          <div>Name: {c.camera_name}</div>
+                          <div>ID: {c.id}</div>
+                        </td>
                         <td>
                           {c.zones?.map((z) => (
                             <div
