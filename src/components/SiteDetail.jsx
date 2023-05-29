@@ -1,8 +1,7 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate, useParams } from "react-router-dom";
-import { decrement, increment } from "../slices/auth";
 import { useEffect, useState } from "react";
-import Sites from "./Sites";
+import Countdown from "react-countdown";
 import { useQuery } from "@apollo/client";
 import { GET_SITE } from "../gql/site";
 import { socket } from "../socket";
@@ -29,6 +28,8 @@ const SiteDetail = () => {
   const [statusMapper, setStatusMapper] = useState({});
   const [thumbnailMapper, setThumbnailMapper] = useState({});
   const [currentStreamUrl, setCurrentStreamUrl] = useState();
+  const [shuntsMapper, setShuntsMapper] = useState([]);
+  const [runawaysMapper, setRunawaysMapper] = useState([]);
 
   useEffect(() => {
     if (!isAuth) {
@@ -92,8 +93,11 @@ const SiteDetail = () => {
         break;
 
       case "SHUNT":
+        const shuntMap = createShuntMapper(newEvent.data);
+        setShuntsMapper(shuntMap);
       case "RUNAWAY":
-        setSocketShunt([newEvent, ...socketShunt]);
+        const runawayMap = createShuntMapper(newEvent.data);
+        setRunawaysMapper(runawayMap);
         break;
       default:
         setSocketZone([newEvent, ...socketZone]);
@@ -102,6 +106,14 @@ const SiteDetail = () => {
   }, [newEvent]);
 
   useEffect(() => {}, [statusMapper]);
+
+  const createShuntMapper = (data) => {
+    const shunt = {};
+    data?.forEach((s) => {
+      shunt[s.cameraId] = { ...s };
+    });
+    return shunt;
+  };
 
   const handleListenZoneEvent = (data) => {
     console.log("🚀 ~ ZONE data:", data);
@@ -116,6 +128,23 @@ const SiteDetail = () => {
   const handleClickCamera = (cameraId) => {
     const streamUrl = streamMapper[cameraId]?.streamUrl;
     setCurrentStreamUrl(streamUrl);
+  };
+
+  const rendererCountDown = (
+    { days, hours, minutes, seconds, completed },
+    index
+  ) => {
+    if (completed) {
+      return <span key={index}></span>;
+    } else {
+      return (
+        <span key={index} style={{ color: "red", fontWeight: "bold" }}>
+          [{days !== 0 ? days + ":" : ""}
+          {days === 0 && hours === 0 ? "" : hours + ":"}
+          {minutes}:{seconds}]
+        </span>
+      );
+    }
   };
 
   return (
@@ -144,6 +173,7 @@ const SiteDetail = () => {
                       <th>Thumbnail</th>
                       <th>Camera</th>
                       <th>Zone</th>
+                      <th>Events</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -210,6 +240,28 @@ const SiteDetail = () => {
                             </div>
                           ))}
                           {!c.zones?.length && "No zone."}
+                        </td>
+                        <td>
+                          <div>
+                            {shuntsMapper[c.id]?.status && (
+                              <div>
+                                SHUNT:{" "}
+                                <Countdown
+                                  date={shuntsMapper[c.id]?.shuntEndTime}
+                                  renderer={rendererCountDown}
+                                />
+                              </div>
+                            )}
+                            {runawaysMapper[c.id]?.status && (
+                              <div>
+                                RUNAWAY:{" "}
+                                <Countdown
+                                  date={runawaysMapper[c.id]?.shuntEndTime}
+                                  renderer={rendererCountDown}
+                                />
+                              </div>
+                            )}
+                          </div>
                         </td>
                       </tr>
                     ))}
