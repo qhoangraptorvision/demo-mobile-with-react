@@ -36,6 +36,8 @@ const SiteDetail = () => {
 
   useEffect(() => {
     console.log("Subs socket events");
+
+    socket.connect();
     socket.on("connect", () => {
       console.log("socket connected");
       socket.emit("CURRENT_SITE_DATA", {
@@ -56,6 +58,7 @@ const SiteDetail = () => {
 
     return () => {
       console.log("Unsubs socket events");
+      socket.disconnect();
       socket.off("connect");
       socket.off("disconnect");
       socket.off(siteId);
@@ -167,7 +170,6 @@ const SiteDetail = () => {
               ) : (
                 "No camera"
               )}
-              <StreamVideo streamUrl={currentStreamUrl} />
             </div>
           </div>
           <div style={{ marginLeft: 100 }}>
@@ -176,7 +178,9 @@ const SiteDetail = () => {
                 import.meta.env.VITE_PORTAL_SOCKET || "http://localhost:6789"
               }: ${JSON.stringify(socketConnected)}`}
             </h3>
-
+            <div>
+              <StreamVideo streamUrl={currentStreamUrl} />
+            </div>
             <h4>Shunt/Runaway Events</h4>
             {/* <div>{JSON.stringify(socketShunt)}</div> */}
             <div>

@@ -2,6 +2,7 @@ import { io } from "socket.io-client";
 
 const connectionOptions = {
   transports: ["websocket"],
+  autoConnect: false,
 };
 
 export const socket = io(
