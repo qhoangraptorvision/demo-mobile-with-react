@@ -51,7 +51,7 @@ const SiteDetail = () => {
 
     socket.on(siteId, (data) => {
       setNewEvent(data);
-      console.log("🚀 ~ SITE data:", data);
+      // console.log("🚀 ~ SITE data:", data);
     });
 
     socket.on("disconnect", () => {
@@ -69,14 +69,14 @@ const SiteDetail = () => {
   }, []);
 
   useEffect(() => {
-    socket.on(currentZone, handleListenZoneEvent);
+    socket.on(currentZone?.id, handleListenZoneEvent);
 
     return () => {
-      if (currentZone) {
-        socket.off(currentZone);
+      if (currentZone?.id) {
+        socket.off(currentZone?.id);
       }
     };
-  }, [currentZone]);
+  }, [currentZone?.id]);
 
   useEffect(() => {
     if (!newEvent) return;
@@ -91,7 +91,6 @@ const SiteDetail = () => {
       case "THUMBNAIL_CAMERAS":
         setThumbnailMapper(newEvent.data);
         break;
-
       case "SHUNT":
         const shuntMap = createShuntMapper(newEvent.data);
         setShuntsMapper(shuntMap);
@@ -116,16 +115,17 @@ const SiteDetail = () => {
   };
 
   const handleListenZoneEvent = (data) => {
-    console.log("🚀 ~ ZONE data:", data);
     setNewEvent(data);
   };
 
-  const handleClickZone = (nextZoneId) => {
-    console.log("🚀 ~ Listen event with Zone:", nextZoneId);
-    setCurrentZone(nextZoneId);
+  const handleClickZone = (zone) => {
+    setCurrentZone(zone);
   };
 
-  const handleClickCamera = (cameraId) => {
+  const handleClickCamera = (cameraId, e) => {
+    if (e?.target?.className !== "zone") {
+      setCurrentZone(null);
+    }
     const streamUrl = streamMapper[cameraId]?.streamUrl;
     setCurrentStreamUrl(streamUrl);
   };
@@ -183,7 +183,7 @@ const SiteDetail = () => {
                         style={{
                           cursor: "pointer",
                         }}
-                        onClick={() => handleClickCamera(c.id)}
+                        onClick={(e) => handleClickCamera(c.id, e)}
                       >
                         <td>{index + 1}</td>
                         <td>
@@ -224,17 +224,18 @@ const SiteDetail = () => {
                         <td>
                           {c.zones?.map((z) => (
                             <div
+                              className="zone"
                               style={{
                                 display: "inline-block",
                                 border: `1px solid ${
-                                  z.id === currentZone ? "red" : "blue"
+                                  z.id === currentZone?.id ? "red" : "blue"
                                 }`,
                                 marginLeft: 6,
                                 padding: 4,
                                 cursor: "pointer",
                               }}
                               key={z.id}
-                              onClick={() => handleClickZone(z.id)}
+                              onClick={() => handleClickZone(z)}
                             >
                               {z.name}
                             </div>
@@ -279,7 +280,7 @@ const SiteDetail = () => {
               }: ${JSON.stringify(socketConnected)}`}
             </h3>
             <div>
-              <StreamVideo streamUrl={currentStreamUrl} />
+              <StreamVideo streamUrl={currentStreamUrl} zone={currentZone} />
             </div>
             <h4>Shunt/Runaway Events</h4>
             {/* <div>{JSON.stringify(socketShunt)}</div> */}

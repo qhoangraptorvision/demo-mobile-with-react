@@ -21,6 +21,8 @@ export const GET_SITE = gql`
         zones {
           id
           name
+          points
+          color
         }
       }
     }
